@@ -1,20 +1,26 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Picker } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 
 const AlcometerApp = () => {
   const [numberOfDrinks, setNumberOfDrinks] = useState('');
-  const [alcoholType, setAlcoholType] = useState('');
+  const [alcoholType, setAlcoholType] = useState('beer'); // Default to beer
   const [timeElapsed, setTimeElapsed] = useState('');
   const [weight, setWeight] = useState('');
   const [gender, setGender] = useState('male'); // Default to male
   const [bacResult, setBacResult] = useState(null);
+
+  const alcoholTypes = {
+    beer: 170, // Typical alcohol content (in mL) for a 355 mL can of beer
+    wine: 75,  // Typical alcohol content (in mL) for a 150 mL glass of wine
+    spirits: 45, // Typical alcohol content (in mL) for a 45 mL shot of spirits
+  };
 
   const calculateBAC = () => {
     // Perform your BAC calculation here based on user input.
     // This calculation is simplified and not accurate.
     // You should use an appropriate formula for accurate BAC calculation.
     const r = gender === 'male' ? 0.68 : 0.55; // Widmark formula constant
-    const alcoholConsumed = numberOfDrinks * 14; // Standard drink has 14 grams of pure alcohol
+    const alcoholConsumed = numberOfDrinks * alcoholTypes[alcoholType]; // Calculate alcohol consumption
 
     const bac = (alcoholConsumed / (weight * 1000 * r) - 0.015 * timeElapsed).toFixed(2);
     setBacResult(bac);
@@ -31,11 +37,23 @@ const AlcometerApp = () => {
       />
 
       <Text style={styles.label}>Type of Alcohol:</Text>
-      <TextInput
-        style={styles.input}
-        value={alcoholType}
-        onChangeText={(text) => setAlcoholType(text)}
-      />
+      <View style={styles.alcoholTypeButtons}>
+        <Button
+          title="Beer"
+          onPress={() => setAlcoholType('beer')}
+          color={alcoholType === 'beer' ? 'blue' : 'gray'}
+        />
+        <Button
+          title="Wine"
+          onPress={() => setAlcoholType('wine')}
+          color={alcoholType === 'wine' ? 'purple' : 'gray'}
+        />
+        <Button
+          title="Spirits"
+          onPress={() => setAlcoholType('spirits')}
+          color={alcoholType === 'spirits' ? 'brown' : 'gray'}
+        />
+      </View>
 
       <Text style={styles.label}>Time Elapsed (hours):</Text>
       <TextInput
@@ -54,13 +72,18 @@ const AlcometerApp = () => {
       />
 
       <Text style={styles.label}>Gender:</Text>
-      <Picker
-        style={styles.input}
-        selectedValue={gender}
-        onValueChange={(itemValue) => setGender(itemValue)}>
-        <Picker.Item label="Male" value="male" />
-        <Picker.Item label="Female" value="female" />
-      </Picker>
+      <View style={styles.genderButtons}>
+        <Button
+          title="Male"
+          onPress={() => setGender('male')}
+          color={gender === 'male' ? 'blue' : 'gray'}
+        />
+        <Button
+          title="Female"
+          onPress={() => setGender('female')}
+          color={gender === 'female' ? 'pink' : 'gray'}
+        />
+      </View>
 
       <Button title="Calculate BAC" onPress={calculateBAC} />
 
@@ -85,6 +108,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+  },
+  alcoholTypeButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  genderButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 10,
   },
 });
 
